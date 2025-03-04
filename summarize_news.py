@@ -263,6 +263,7 @@ def format_summary_for_slack(summary):
 
 
 
+
 def send_message_to_slack(channel_id, message_text):
     """Sends a formatted message to Slack."""
     if not channel_id:
