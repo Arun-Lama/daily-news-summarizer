@@ -229,7 +229,7 @@ def format_summary_for_slack(summary):
     Formats the summary for Slack:
     - Removes unnecessary asterisks around the date
     - Removes calendar emoji
-    - Includes the date and title (hyperlinked) without repeating 'Link'
+    - Includes the date and title (hyperlinked) without repeating text or extra 'Link'
     """
     formatted_summary = "Here’s the latest update on the real estate sector:\n\n"
     
@@ -252,13 +252,14 @@ def format_summary_for_slack(summary):
             date = date.replace("**", "")  # Remove any asterisks around the date
             date = date.replace("📅", "")  # Remove the calendar emoji
 
-            # Format the output as Date → Title (hyperlinked)
+            # Format the output as Date → Title (hyperlinked) without the "Link" part
             formatted_summary += f"• {date} → <{url}|{title}>\n"
         else:
             # If it's not a link, just add the line as is
             formatted_summary += line + "\n"
 
     return formatted_summary.strip()
+
 
 
 def send_message_to_slack(channel_id, message_text):
