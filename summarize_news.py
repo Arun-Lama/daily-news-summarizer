@@ -153,6 +153,7 @@ def format_dataframe_for_gemini(df):
         formatted_text += f"- **{row['Date']}**: [{row['Title']}]({row['URL']})\n"
     return formatted_text
 
+
 def summarize_news_with_gemini(df, query):
     """
     Processes the news from DataFrame, structures it, and sends to Gemini for summarization.
@@ -255,6 +256,7 @@ def format_summary_for_slack(summary):
             formatted_summary += line + "\n"
 
     return formatted_summary.strip()
+
 
 
 def send_message_to_slack(channel_id, message_text):
