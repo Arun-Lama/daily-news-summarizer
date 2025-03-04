@@ -194,7 +194,7 @@ query =  ("""From the following news return me only those related to:
 - List only the relevant news in **bullet points**.
 - Format: Date, News title (hyperlinked with URL)
 - **Do not omit any important news** related to the above topics.
-And please take care of the duplicate news titles from different or the same source. I want only unique titles.
+Sometimes same news is published on different websites and in that I can I do not want duplicate news.
     """)
 summary = summarize_news_with_gemini(df, query)
 
