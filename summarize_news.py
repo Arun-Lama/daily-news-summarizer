@@ -252,17 +252,16 @@ def format_summary_for_slack(summary):
             date = date.replace("**", "")  # Remove any asterisks around the date
             date = date.replace("📅", "")  # Remove the calendar emoji
 
+            # Ensure the URL is correct and clean
+            url = urllib.parse.unquote(url)  # Decode URL if necessary
+
             # Proper Slack hyperlink formatting
             formatted_summary += f"• {date} → <{url}|{title}>\n"
         else:
             # If it's not a link, just add the line as is
             formatted_summary += line + "\n"
 
-    return formatted_summary.strip().replace("*","")
-
-
-
-
+    return formatted_summary.strip().replace("*", "")  # Remove remaining asterisks if any
 
 
 def send_message_to_slack(channel_id, message_text):
