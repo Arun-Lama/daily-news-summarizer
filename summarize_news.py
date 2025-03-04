@@ -148,7 +148,7 @@ def format_dataframe_for_gemini(df):
     Converts DataFrame into structured text format for Gemini.
     Each news entry includes a **date**, **title (hyperlinked)**, and **source URL**.
     """
-    formatted_text = "🔍 **Recent News Articles:**\n\n"
+    formatted_text = "🔍 **Recent News:**\n\n"
     for _, row in df.iterrows():
         formatted_text += f"- **{row['Date']}**: [{row['Title']}]({row['URL']})\n"
     return formatted_text
@@ -167,7 +167,7 @@ def summarize_news_with_gemini(df, query):
     if len(news_text) > MAX_PROMPT_LENGTH:
         news_text = news_text[:MAX_PROMPT_LENGTH]
 
-    prompt = news_text + f"\n\n💡 **Query:** {query}\n"
+    prompt =  f"\n\n💡 **Query:** {query}\n\n{news_text}"
 
     model_index = 0
     selected_model = models[model_index]["name"]
@@ -193,7 +193,7 @@ query =  ("""From the following news return me only those related to:
 - List only the relevant news in **bullet points**.
 - Format: Date, News title (hyperlinked with URL)
 - **Do not omit any important news** related to the above topics.
-And please take care of the duplicate news titles from different or same source. I want only unique titles.
+And please take care of the duplicate news titles from different or the same source. I want only unique titles.
     """)
 summary = summarize_news_with_gemini(df, query)
 
