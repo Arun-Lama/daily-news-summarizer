@@ -222,40 +222,46 @@ def get_channel_id(channel_name):
 
     except SlackApiError:
         return None
+from datetime import datetime
 
 def format_summary_for_slack(summary):
     """
     Formats the summary for Slack:
-    - Adds 📅 emoji for the date
+    - Removes unnecessary asterisks around the date
+    - Removes calendar emoji
     - Hyperlinks the titles correctly in Slack-friendly format
-    - Removes unwanted asterisks or extra Markdown artifacts
     """
     formatted_summary = "Here’s the latest update on the real estate sector:\n\n"
     
+    # Process each line from the summary
     for line in summary.split("\n"):
-        if "**" in line and "[" in line and "](" in line:  # Identifying Markdown formatting
-            parts = line.split("**")
-            if len(parts) > 2:
-                date = parts[1].strip()
-                title_url_part = parts[2].strip()
+        if "[" in line and "](" in line:  # Identifying Slack hyperlink formatting
+            # Find the title and URL in the markdown format
+            title_start = line.find("[") + 1
+            title_end = line.find("]")
+            url_start = line.find("(") + 1
+            url_end = line.find(")")
 
-                # Extract title and URL
-                if "[" in title_url_part and "](" in title_url_part:
-                    title_start = title_url_part.find("[") + 1
-                    title_end = title_url_part.find("]") 
-                    url_start = title_url_part.find("(") + 1
-                    url_end = title_url_part.find(")")
+            title = line[title_start:title_end]
+            url = line[url_start:url_end]
 
-                    # Proper Slack hyperlink formatting
-                    title = title_url_part[title_start:title_end]
-                    url = title_url_part[url_start:url_end]
-                    formatted_summary += f"• 📅 *{date}* → <{url}|{title}>\n"
-                else:
-                    formatted_summary += f"• 📅 *{date}* → {title_url_part}\n"
+            # Extract date from the line (assume the date is always at the start of the line)
+            date = line.split(":")[0].strip() if ":" in line else "Unknown Date"
+
+            # Remove asterisks around the date and calendar emoji
+            date = date.replace("**", "")  # Remove any asterisks around the date
+            date = date.replace("📅", "")  # Remove the calendar emoji
+
+            # Proper Slack hyperlink formatting
+            formatted_summary += f"• {date} → <{url}|{title}>\n"
         else:
+            # If it's not a link, just add the line as is
             formatted_summary += line + "\n"
 
-    return formatted_summary.strip()
+    return formatted_summary.strip().replace("*","")
+
+
+
 
 
 
