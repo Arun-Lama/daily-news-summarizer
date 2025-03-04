@@ -229,7 +229,8 @@ def format_summary_for_slack(summary):
     - Hyperlinks the titles correctly in Slack-friendly format
     - Removes unwanted asterisks or extra Markdown artifacts
     """
-    formatted_summary = ""
+    formatted_summary = "Here’s the latest update on the real estate sector:\n\n"
+    
     for line in summary.split("\n"):
         if "**" in line and "[" in line and "](" in line:  # Identifying Markdown formatting
             parts = line.split("**")
@@ -243,13 +244,18 @@ def format_summary_for_slack(summary):
                     title_end = title_url_part.find("]") 
                     url_start = title_url_part.find("(") + 1
                     url_end = title_url_part.find(")")
-                    formatted_summary += f"• 📅 *{date}* → <{url_start}|{title_end}>\n"
 
+                    # Proper Slack hyperlink formatting
+                    title = title_url_part[title_start:title_end]
+                    url = title_url_part[url_start:url_end]
+                    formatted_summary += f"• 📅 *{date}* → <{url}|{title}>\n"
                 else:
                     formatted_summary += f"• 📅 *{date}* → {title_url_part}\n"
         else:
             formatted_summary += line + "\n"
+
     return formatted_summary.strip()
+
 
 def send_message_to_slack(channel_id, message_text):
     """Sends a formatted message to Slack."""
