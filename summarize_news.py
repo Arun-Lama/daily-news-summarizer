@@ -189,12 +189,23 @@ query =  ("""From the following news return me only those related to:
 - **Market expansion in the real estate sector**
 - **Major strategic shifts by real estate companies**
 - **Blockchain and tokenization in real estate**
+- **Trends in real estate technology (PropTech) adoption**
+- **Emerging market opportunities in real estate (e.g., smart cities, green buildings, etc.)**
+- **Investment and funding rounds in real estate startups and companies**
+- **Regulatory changes and government policies impacting the real estate market**
+- **Real estate mergers, acquisitions, and partnerships**
+- **Innovations in real estate financing (e.g., crowdfunding, real estate REITs)**
+- **Sustainability practices in real estate development**
+- **Real estate market forecasts and predictive analytics**
+- **Competitor pricing strategies and market positioning**
+- **Consumer behavior shifts and preferences in the real estate market**
+
 
 📌 **Instructions:**
 - List only the relevant news in **bullet points**.
 - Format: Date, News title (hyperlinked with URL)
 - **Do not omit any important news** related to the above topics.
-Sometimes same news is published on different websites and in that I can I do not want duplicate news.
+Sometimes same news is published on different websites with a bit different titles and in that case I want only one of them.
     """)
 summary = summarize_news_with_gemini(df, query)
 
