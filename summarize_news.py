@@ -185,21 +185,18 @@ def summarize_news_with_gemini(df, query):
 
 # The query you want Gemini to summarize
 query =  ("""From the following news return me only those related to:
+- **Home buying platforms**
 - **New real estate product launches**
+- **First-time home buyers**
 - **Market expansion in the real estate sector**
 - **Major strategic shifts by real estate companies**
 - **Blockchain and tokenization in real estate**
 - **Trends in real estate technology (PropTech) adoption**
-- **Emerging market opportunities in real estate (e.g., smart cities, green buildings, etc.)**
 - **Investment and funding rounds in real estate startups and companies**
 - **Regulatory changes and government policies impacting the real estate market**
 - **Real estate mergers, acquisitions, and partnerships**
 - **Innovations in real estate financing (e.g., crowdfunding, real estate REITs)**
-- **Sustainability practices in real estate development**
-- **Real estate market forecasts and predictive analytics**
-- **Competitor pricing strategies and market positioning**
 - **Consumer behavior shifts and preferences in the real estate market**
-
 
 📌 **Instructions:**
 - List only the relevant news in **bullet points**.
@@ -273,23 +270,23 @@ def format_summary_for_slack(summary):
     return formatted_summary.strip().replace("**", "")
 
 
+print(format_summary_for_slack(summary))    
 
+# def send_message_to_slack(channel_id, message_text):
+#     """Sends a formatted message to Slack."""
+#     if not channel_id:
+#         print("❌ Cannot send message: Channel ID not found.")
+#         return
 
-def send_message_to_slack(channel_id, message_text):
-    """Sends a formatted message to Slack."""
-    if not channel_id:
-        print("❌ Cannot send message: Channel ID not found.")
-        return
+#     try:
+#         response = client.chat_postMessage(channel=channel_id, text=message_text)
+#         print("✅ Message sent successfully to Slack!")
+#     except SlackApiError as e:
+#         print(f"❌ Error sending message: {e.response['error']}")
 
-    try:
-        response = client.chat_postMessage(channel=channel_id, text=message_text)
-        print("✅ Message sent successfully to Slack!")
-    except SlackApiError as e:
-        print(f"❌ Error sending message: {e.response['error']}")
+# # Format the summary and send to Slack
+# formatted_summary = format_summary_for_slack(summary)
+# channel_id = get_channel_id(channel_name)
 
-# Format the summary and send to Slack
-formatted_summary = format_summary_for_slack(summary)
-channel_id = get_channel_id(channel_name)
-
-if formatted_summary and channel_id:
-    send_message_to_slack(channel_id, formatted_summary)
+# if formatted_summary and channel_id:
+#     send_message_to_slack(channel_id, formatted_summary)
