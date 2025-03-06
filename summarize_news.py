@@ -198,12 +198,9 @@ query =  ("""From the following news return me only those related to:
 - **Innovations in real estate financing (e.g., crowdfunding, real estate REITs)**
 - **Consumer behavior shifts and preferences in the real estate market**
 
-📌 **Instructions for filter:**
-- List only the relevant news in **bullet points**.
-- Format: Date, News title (hyperlinked with URL)
-- **Do not omit any important news** related to the above topics.
-- I don't expect news more than 20, so you should be giving me top news mostly related to real estate companies not the general blog articles or analysis.
-Sometimes same news is published on different websites with a bit different titles and in that case I want only one of them.
+📌 **Important Instructions for filter:**
+- I don't want more than 20 news. So give me only top 20 news that are very important to know for reAlpha Tech Corp. 
+  Don't give me the news that is generic and informational blog articles. I need news about important strategic moves of competitors. 
     """)
 summary = summarize_news_with_gemini(df, query)
 
