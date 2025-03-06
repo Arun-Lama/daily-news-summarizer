@@ -267,24 +267,21 @@ def format_summary_for_slack(summary):
 
     return formatted_summary.strip().replace("**", "")
 
+def send_message_to_slack(channel_id, message_text):
+    """Sends a formatted message to Slack."""
+    if not channel_id:
+        print("❌ Cannot send message: Channel ID not found.")
+        return
 
-print(format_summary_for_slack(summary))    
+    try:
+        response = client.chat_postMessage(channel=channel_id, text=message_text)
+        print("✅ Message sent successfully to Slack!")
+    except SlackApiError as e:
+        print(f"❌ Error sending message: {e.response['error']}")
 
-# def send_message_to_slack(channel_id, message_text):
-#     """Sends a formatted message to Slack."""
-#     if not channel_id:
-#         print("❌ Cannot send message: Channel ID not found.")
-#         return
+# Format the summary and send to Slack
+formatted_summary = format_summary_for_slack(summary)
+channel_id = get_channel_id(channel_name)
 
-#     try:
-#         response = client.chat_postMessage(channel=channel_id, text=message_text)
-#         print("✅ Message sent successfully to Slack!")
-#     except SlackApiError as e:
-#         print(f"❌ Error sending message: {e.response['error']}")
-
-# # Format the summary and send to Slack
-# formatted_summary = format_summary_for_slack(summary)
-# channel_id = get_channel_id(channel_name)
-
-# if formatted_summary and channel_id:
-#     send_message_to_slack(channel_id, formatted_summary)
+if formatted_summary and channel_id:
+    send_message_to_slack(channel_id, formatted_summary)
