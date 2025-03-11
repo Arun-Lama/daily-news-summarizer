@@ -201,6 +201,7 @@ query =  ("""From the following news return me only those related to:
 📌 **Important Instructions for filter:**
 - I don't want more than 20 news. So give me only top 20 news that are very important to know for reAlpha Tech Corp. 
   Don't give me the news that is generic and informational blog articles. I need news about important strategic moves of competitors. 
+  Rather than additional texts, I would simply love the news title with hyperlink containing URL.
     """)
 summary = summarize_news_with_gemini(df, query)
 
