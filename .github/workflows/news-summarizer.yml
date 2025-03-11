@@ -2,7 +2,7 @@ name: Daily News Summarizer
 
 on:
   schedule:
-    - cron: '30 21 * * *'  # Runs at 4:30 AM ET (9:30 AM UTC)
+    - cron: '40 20 * * *'  
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
