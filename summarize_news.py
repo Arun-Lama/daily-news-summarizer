@@ -24,6 +24,7 @@ with open(rss_file_path, "r") as file:
 print("✅ RSS Feeds Loaded:", rss_feeds)
 rss_feeds = [url.strip("[]',") for url in rss_feeds]  # Clean unwanted characters
 
+
 # Initialize an empty list to store news articles
 all_news = []
 
@@ -46,6 +47,9 @@ for rss_url in rss_feeds:
 
         # Append to list
         all_news.append({"Date": parsed_date, "Title": title, "URL": link})
+
+
+# %% Split
 
 # Convert to DataFrame for better display
 df = pd.DataFrame(all_news)
@@ -150,7 +154,7 @@ def format_dataframe_for_gemini(df):
     """
     formatted_text = "🔍 **Recent News Articles:**\n\n"
     for _, row in df.iterrows():
-        formatted_text += f"- {row['Date']}: {row['Title']} {row['URL']}\n"
+        formatted_text += f"- {row['Date']}: {row['Title']}, {row['URL']}\n"
     return formatted_text
 
 
@@ -182,15 +186,15 @@ def summarize_news_with_gemini(df, query):
 
     print("⚠️ Failed to generate summary.")
     return None
-
+# %% First Cell - Define variables
 # The query you want Gemini to summarize
-query =  ("""For the above news apply filter to get only:
+query =  ("""Above news are in this format. Date: news, URL. For these news apply filter to get only:
 - New real estate product launches
 - Market expansion in the real estate sector
 - Major strategic shifts by real estate companies
 - Blockchain and tokenization in real estate
 - Please take care of the duplicate news titles from different or same source. I want only unique titles. And final news list should not exceed 20.
-- Strictly follow this Output Format> Date, News title, URL
+- ONLY THE OUTPUT FORMAT YOU CAN GIVE> Date, News, URL
     """)
 summary = summarize_news_with_gemini(df, query)
 
@@ -202,7 +206,7 @@ from slack_sdk.errors import SlackApiError
 client = WebClient(token=SLACK_BOT_TOKEN)
 
 # Define Slack Channel Name
-channel_name = 'news-channel-2'
+channel_name = 'news-channel'
 
 def get_channel_id(channel_name):
     """Fetches the Slack private channel ID given the channel name."""
@@ -235,9 +239,6 @@ def format_summary_for_slack(summary):
 
     for line in lines:
         line = line.strip()
-        if not line:
-            continue  # Skip empty lines
-
         # Split by commas to get Date, Title, and URL
         parts = line.split(", ")
         if len(parts) < 3:
