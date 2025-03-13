@@ -247,7 +247,7 @@ def format_summary_for_slack(summary):
         date, title, url = parts[0].strip(), parts[1].strip(), parts[2].strip()
 
         # Format for Slack using `<URL|Title>` format
-        formatted_summary += f"- 📅 *{date}* → <{url}|{title}>\n"
+        formatted_summary += f"- 📅 *{date[:10]}* → <{url}|{title}>\n"
 
     return formatted_summary.strip()
 
