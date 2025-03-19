@@ -9,11 +9,11 @@ import random
 from datetime import datetime
 import re
 import urllib
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-load_dotenv()
+# load_dotenv()
 
 # Load API keys from GitHub Secrets
 GEMINI_API_KEY = os.getenv("GEMINI_API")
