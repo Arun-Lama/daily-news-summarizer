@@ -1,4 +1,5 @@
 import os
+import json
 import feedparser
 import pandas as pd
 import slack_sdk
@@ -8,6 +9,11 @@ import random
 from datetime import datetime
 import re
 import urllib
+from dotenv import load_dotenv
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+
+load_dotenv()
 
 # Load API keys from GitHub Secrets
 GEMINI_API_KEY = os.getenv("GEMINI_API")
@@ -127,7 +133,7 @@ def send_prompt_with_backoff(prompt, model_name):
     while attempt < MAX_RETRIES:
         try:
             print(f"🚀 Sending request to {model_name} (Attempt {attempt+1})")
-            model = genai.GenerativeModel(model_name)
+            model = genai.GenerativeModel(model_name,generation_config={"response_mime_type": "application/json"})
             response = model.generate_content(prompt)
 
             request_count[model_name] += 1
@@ -152,9 +158,9 @@ def format_dataframe_for_gemini(df):
     Converts DataFrame into structured text format for Gemini.
     Each news entry includes a **date**, **title (hyperlinked)**, and **source URL**.
     """
-    formatted_text = "🔍 **Recent News Articles:**\n\n"
+    formatted_text = "🔍 **Recent News:**\n\n"
     for _, row in df.iterrows():
-        formatted_text += f"- {row['Date']}: {row['Title']}, {row['URL']}\n"
+        formatted_text += f"->news title: {row['Title']}. URL: {row['URL']}\n"
     return formatted_text
 
 
@@ -188,25 +194,43 @@ def summarize_news_with_gemini(df, query):
     return None
 # %% First Cell - Define variables
 # The query you want Gemini to summarize
-query =  ("""Above news are in this format. Date: news, URL. For these news apply filter to get only:
+query =  (""" 
+    Below is a list of news articles with their respective titles and URLs in the format:"news title: news title. URL: URL. 
+Extract only news articles that are related to real estate but focus on following for sorting:
 - New real estate product launches
 - Market expansion in the real estate sector
 - Major strategic shifts by real estate companies
 - Blockchain and tokenization in real estate
+- Or any important events that affects entire real estate industry
 - Please take care of the duplicate news titles from different or same source. I want only unique titles. And final news list should not exceed 20.
-- ONLY THE OUTPUT FORMAT YOU CAN GIVE> Date, News, URL
+final format should be in json following json format: 
+{
+  "Real Estate News": [
+    {
+      "title": "News Title",
+      "url": "News URL"
+    },
+    {
+      "title": "News Title",
+      "url": "News URL"
+    }
+  ]
+}
+
+If there are no relevant news articles, return:
+
+{
+  "Real Estate News": "No News"
+}
+
     """)
 summary = summarize_news_with_gemini(df, query)
-
-# Slack integration
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
 
 # Initialize Slack WebClient
 client = WebClient(token=SLACK_BOT_TOKEN)
 
 # Define Slack Channel Name
-channel_name = 'news-channel-2'
+channel_name = 'news-channel'
 
 def get_channel_id(channel_name):
     """Fetches the Slack private channel ID given the channel name."""
@@ -229,26 +253,33 @@ def format_summary_for_slack(summary):
     Formats the summary into a Slack-compatible structure with properly formatted links.
 
     Args:
-    - summary (str): The raw summary text (comma-separated values: Date, Title, URL).
+    - summary (str or dict): The raw summary text or a dictionary containing news URLs as keys and titles as values.
 
     Returns:
     - str: A properly formatted Slack message.
     """
-    formatted_summary = "*🏡 Real Estate Market Updates*\n\n"
-    lines = summary.strip().split("\n")
+    
+    # If the summary contains no relevant M&A news
+    if isinstance(summary, dict) and summary.get("Real Estate News") == "No News":
+        return "No Relevant news today."
+    
+    if isinstance(summary, str):
+        try:
+            summary = json.loads(summary)  # Convert JSON string to dictionary if needed
+        except json.JSONDecodeError:
+            return "Invalid JSON input."
+    
+    formatted_summary = "*🏡 Real Estate News*\n\n"
+    
+    # Check if the JSON structure is as expected
+    if isinstance(summary, dict) and "Real Estate News" in summary and isinstance(summary["Real Estate News"], list):
+        news_items = summary["Real Estate News"]
+    else:
+        return "Unexpected summary format."
 
-    for line in lines:
-        line = line.strip()
-        # Split by commas to get Date, Title, and URL
-        parts = line.split(", ")
-        if len(parts) < 3:
-            continue  # Skip invalid lines
-
-        date, title, url = parts[0].strip(), parts[1].strip(), parts[2].strip()
-
-        # Format for Slack using `<URL|Title>` format
-        formatted_summary += f"- 📅 *{date[:10]}* → <{url}|{title}>\n"
-
+    for item in news_items:
+        formatted_summary += f"📢: <{item['url']}|{item['title']}>\n"
+    
     return formatted_summary.strip()
 
 def send_message_to_slack(channel_id, summary_text, slack_token):
@@ -279,8 +310,6 @@ def send_message_to_slack(channel_id, summary_text, slack_token):
 # Format the summary and send to Slack
 formatted_summary = format_summary_for_slack(summary)
 channel_id = get_channel_id(channel_name)
-print(summary)
-print("---------------------------------")
 print(formatted_summary)
 if formatted_summary and channel_id:
     send_message_to_slack(channel_id, formatted_summary, SLACK_BOT_TOKEN)
