@@ -202,7 +202,7 @@ Extract only news articles that are related to real estate but focus on followin
 - Major strategic shifts by real estate companies
 - Blockchain and tokenization in real estate
 - Or any important events that affects entire real estate industry
-- Please do not repeat the same news, I don't want duplications. And the final news list should not exceed 20.
+- Please do not repeat the same news, I don't want duplications, This should be strictly followed. And the final news list should not exceed 20.
 final format should be in following json format: 
 {
   "Real Estate News": [
